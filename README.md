@@ -1,9 +1,7 @@
 filebeat-module-postfix
 =======================
 
-This is a simple [Filebeat](https://www.elastic.co/products/beats/filebeat)
-module that parses logs created by [Postfix](http://www.postfix.org/).
-
+Modify for Scrollout F1 mail gateway
 
 Compatibility
 -------------

@@ -27,6 +27,22 @@
               type: ip
               description: >
                 The IP address of the remote server that delivered this message.
+            - name: remote_port
+              type: text
+              description: >
+                The port of the remote server that delivered this message.
+            - name: local_host
+              type: text
+              description: >
+                The hostname of the local server that delivered this message.
+            - name: local_address
+              type: ip
+              description: >
+                The IP address of the local server that delivered this message.
+            - name: local_port
+              type: text
+              description: >
+                The port of the local server that delivered this message.
             - name: login_username
               type: keyword
               description: >

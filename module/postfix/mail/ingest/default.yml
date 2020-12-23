@@ -6,16 +6,17 @@ processors:
     ignore_missing: false
     ignore_failure: false
     pattern_definitions:
-      POSTFIX_PREFIX: "%{SYSLOGTIMESTAMP:timestamp} %{SYSLOGHOST:host.hostname} %{SYSLOGPROG}\\[%{POSINT:process.pid:long}\\]"
+      POSTFIX_PREFIX: "%{SYSLOGTIMESTAMP:timestamp} %{SYSLOGHOST:host.hostname} %{SYSLOGPROG}"
     patterns:
-    - "^%{POSTFIX_PREFIX}: %{BASE16NUM:postfix.mail.queue_id}: %{DATA:message}$"
+    - "^%{POSTFIX_PREFIX}: %{USERNAME:postfix.mail.queue_id}: %{DATA:message}$"
     - "^%{POSTFIX_PREFIX}: %{DATA:message}$"
 - grok:
     field: message
-    ignore_missing: false
+    ignore_missing: true
     ignore_failure: false
     pattern_definitions:
-      POSTFIX_HOST: "%{DATA:postfix.mail.remote_host} ?\\[%{DATA:postfix.mail.remote_address}\\]"
+      POSTFIX_HOST: "(%{IPORHOST:postfix.mail.remote_host}|)\\[%{IP:postfix.mail.remote_address}\\]((:%{POSINT:postfix.mail.remote_port})|)(:|)"
+      POSTFIX_HOST_L: "(%{IPORHOST:postfix.mail.local_host}|)\\[%{IP:postfix.mail.local_address}\\]((:%{POSINT:postfix.mail.local_port})|)(:|)"
     patterns:
     - "^client=%{POSTFIX_HOST}, sasl_method=LOGIN, sasl_username=%{DATA:postfix.mail.login_username}$"
     - "^%{LOGLEVEL}: Recipient address rate limit exceeded: %{DATA:message} from %{POSTFIX_HOST}
@@ -23,7 +24,8 @@ processors:
     - "^from=<%{DATA:postfix.mail.from}>, size=%{POSINT:postfix.mail.size:long}, nrcpt=%{POSINT:postfix.mail.nrcpt:int}"
     - "^to=<%{DATA:postfix.mail.to}>.+ relay=%{POSTFIX_HOST}.+ status=%{DATA:postfix.mail.status}$"
     - "^to=<%{DATA:postfix.mail.to}>.+ relay=%{HOSTNAME}.+ status=%{DATA:postfix.mail.status}$"
-    - "^(connect|disconnect|lost connection after CONNECT) from %{POSTFIX_HOST}$"
+    - "^CONNECT from %{POSTFIX_HOST} to %{POSTFIX_HOST_L}$"
+    - "^(connect|disconnect|lost connection after CONNECT) (from|to) %{POSTFIX_HOST}( %{DATA}|)$"
     - "^login: %{POSTFIX_HOST} %{USERNAME:login.username} %{DATA:login.method} %{DATA:message}$"
     - "^%{LOGLEVEL}: %{DATA:message}$"
     - "^message-id=<%{DATA:message_id} ?%{DATA:message}>$"
